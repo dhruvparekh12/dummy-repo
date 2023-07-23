@@ -14,24 +14,17 @@ pipelines:
     stages:
     - test-and-report:
         fetch_materials: true
-        keep_artifacts: false
+        keep_artifacts: true
         clean_workspace: false
         approval:
           type: success
-          allow_only_on_success: false
+          allow_only_on_success: true
         jobs:
           run-unit-tests:
             timeout: 0
             environment_variables:
               PATH: '/var/go/.nvm/versions/node/v18.17.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'
             tasks:
-            - exec:
-                arguments:
-                - -c
-                - npm -v
-                command: sh
-                run_if: passed
-                working_directory: ./
             - exec:
                 arguments:
                 - -c
@@ -43,6 +36,33 @@ pipelines:
                 arguments:
                 - -c
                 - npm run test:ci
+                command: sh
+                run_if: passed
+                working_directory: ./
+            # - exec:
+            #     arguments:
+            #     - -c
+            #     - npm run build
+            #     command: sh
+            #     run_if: passed
+            #     working_directory: ./
+    - build:
+        fetch_materials: false
+        keep_artifacts: true
+        clean_workspace: false
+        approval:
+          type: success
+          allow_only_on_success: true
+        jobs:
+          build:
+            timeout: 0
+            environment_variables:
+              PATH: '/var/go/.nvm/versions/node/v18.17.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'
+            tasks:
+            - exec:
+                arguments:
+                - -c
+                - npm run build
                 command: sh
                 run_if: passed
                 working_directory: ./
